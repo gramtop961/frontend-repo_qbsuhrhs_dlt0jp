@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-export default function Cart({ items, onClear, onCheckout }) {
+export default function Cart({ items, onClear, onCheckout, onInc, onDec }) {
   const total = useMemo(() => items.reduce((sum, it) => sum + (it.price * (it.qty || 1)), 0), [items])
 
   if (!items.length) return (
@@ -20,15 +20,20 @@ export default function Cart({ items, onClear, onCheckout }) {
           <div key={idx} className="flex items-center justify-between text-sm">
             <div className="truncate">
               <span className="font-medium">{it.title}</span>
+              {it.selected_size && <span className="text-gray-500 ml-1">({it.selected_size})</span>}
               <span className="text-gray-500 ml-2">x{it.qty || 1}</span>
             </div>
-            <div className="tabular-nums">${'{'}(it.price * (it.qty || 1)).toFixed(2){'}'}</div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => onDec?.(it)} className="px-2 py-1 rounded bg-gray-100">-</button>
+              <button onClick={() => onInc?.(it)} className="px-2 py-1 rounded bg-gray-100">+</button>
+              <div className="tabular-nums">${(it.price * (it.qty || 1)).toFixed(2)}</div>
+            </div>
           </div>
         ))}
       </div>
       <div className="flex items-center justify-between pt-3 mt-3 border-t">
         <div className="text-gray-600">Total</div>
-        <div className="font-bold tabular-nums">${'{'}total.toFixed(2){'}'}</div>
+        <div className="font-bold tabular-nums">${total.toFixed(2)}</div>
       </div>
       <button onClick={onCheckout} className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
         Place Order
